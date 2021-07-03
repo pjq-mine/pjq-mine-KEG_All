@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysu.mapper.DeviceMapper">
+    <resultMap id="DeviceResultMap" type="com.ysu.entity.Device">
+        <id column="id" property="id"/>
+        <result column="d_id" property="dId" jdbcType="VARCHAR" />
+        <result column="p_name" property="pName" jdbcType="VARCHAR" />
+        <result column="d_btime" property="dBtime" jdbcType="VARCHAR" />
+        <result column="d_number" property="dNumber" jdbcType="VARCHAR" />
+        <result column="p_price" property="pPrice" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="d_status" property="dStatus" jdbcType="INTEGER" />
+        <association property="dClass" javaType="com.ysu.entity.DeviceClass">
+            <id property="cId" column="id"/>
+            <result property="cName" column="c_name"/>
+        </association>
+        <association property="user" javaType="com.ysu.entity.User">
+            <id property="uId" column="id"/>
+            <result property="uName" column="u_name"/>
+        </association>
+        <association property="pManufacturer" javaType="com.ysu.entity.DeviceManufacturer">
+            <id property="mId" column="id"/>
+            <result property="mName" column="m_name"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertDevice" >    <!--向表中插入自增ID-->
+        INSERT INTO `keg`.`device` (`d_id`, `p_name`, `d_class`,`d_number`, `p_price`, `user_id`, `p_manufacturer`, `d_status`) VALUES (#{device.dId}, #{device.pName}, #{cId}, #{device.dNumber}, #{device.pPrice}, #{uId}, #{mId}, #{device.dStatus})    </insert>
+
+    <delete id="deleteDevice">
+        DELETE FROM `keg`.`device` WHERE `id` = #{id}
+    </delete>
+
+    <select id="findById" resultType="com.ysu.entity.Device">
+        select * from `keg`.`device` WHERE `id` = #{id}
+    </select>
+    <!--改-->
+    <update id="updateDevice">
+        update `keg`.`device`
+        <set>
+            d_id = #{device.dId},
+            p_name = #{device.pName},
+            d_class = #{cId},
+            d_number = #{device.dNumber},
+            p_price = #{device.pPrice},
+            user_id = #{uId},
+            p_manufacturer = #{mId},
+            d_status = #{device.dStatus}
+
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <sql id="where_sql">
+        <where>
+            and d.d_status = #{status}
+            <if test="dClass_select != 3">
+                and d.d_class = #{dClass_select}
+            </if>
+            <if test="pManufacturer_select != 4">
+                and d.p_manufacturer = #{pManufacturer_select}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (d.p_name like concat('%',#{keyword},'%')
+                or u.u_name like concat('%',#{keyword},'%')
+                or d.user_id like concat('%',#{keyword},'%'))
+            </if>
+        </where>
+    </sql>
+
+    <select id="deviceList" resultMap="DeviceResultMap">
+        SELECT
+        d.*,
+        dc.c_name,
+        m.m_name,
+        u.u_name
+        FROM
+        device AS d
+        INNER JOIN
+        device_class AS dc
+        ON
+        d.d_class = dc.c_id
+        INNER JOIN
+        device_manufacturer AS m
+        ON
+        d.p_manufacturer = m.m_id
+        INNER JOIN
+        `user` AS u
+        ON
+        d.user_id = u.id
+
+
+        <include refid="where_sql"/>
+    </select>
+</mapper>

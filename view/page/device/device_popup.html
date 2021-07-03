@@ -1,0 +1,181 @@
+<html>
+<head>
+    <title>KEG实验室管理系统</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="images/favicon_.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <!-- 引入css -->
+    <link rel="stylesheet" href="../../css/plugins/font-awesome-4.7.0/css/font-awesome.min.css"  media="all">
+    <link rel="stylesheet" href="../../lib/layui-v2.3.0/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../../css/main.css"  media="all">
+</head>
+<body>
+
+<div id="app">
+    <div class="layui-form timo-compile">
+        <form action="http://localhost:8081/device/save" class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">设备编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="dId" lay-verify="title" autocomplete="off" placeholder="例：20210701001、20210701002" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 40px">
+                <label class="layui-form-label">设备名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="pName"  lay-verify="required" autocomplete="off" placeholder="请输入设备名" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">设备类型</label>
+                <div class="layui-input-inline">
+                    <select name="cId" lay-filter="deviceClass"  required lay-verify="required" autocomplete="off">
+                        <option value=""></option>
+                        <option :value="dclass.cid" v-for="dclass in dclasses" :key="dclass.cid">{{dclass.cname}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">数量</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="dNumber"  lay-verify="title" autocomplete="off" placeholder="请输入数量" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">单价</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="pPrice"  lay-verify="title" autocomplete="off" placeholder="请输入单价" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">负责人</label>
+                <div class="layui-input-inline">
+                    <select name="uId" lay-filter="user" required lay-verify="required" autocomplete="off">
+                       
+                        <option :value="user.id" v-for="user in users" :key="user.id">{{user.uname}}</option>
+                    </select>
+                </div>
+            </div>
+            
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">厂家</label>
+                <div class="layui-input-inline">
+                    <select name="mId" lay-filter="deviceManufacturer" >
+                        
+                        <option :value="manufacturer.mid" v-for="manufacturer in manufactureres" :key="manufacturer.mid">{{manufacturer.mname}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-inline">
+                    <input type="checkbox" value="1"  name="dStatus" lay-skin="switch" lay-text="ON|OFF">
+                </div>
+            </div>
+
+            <div class="layui-form-item timo-finally">
+                <button class="layui-btn ajax-submit" lay-filter="login-submit" id="loginSubmit"><i class="fa fa-check-circle"></i> 保存</button>
+                <button class="layui-btn btn-secondary close-popup"><i class="fa fa-times-circle"></i> 关闭</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../../lib/layui-v2.3.0/layui.js" charset="utf-8"></script>
+<script src="../../js/main.js" charset="utf-8"></script>
+<script type="text/javascript" src="../../js/vue/vue.js"></script>
+<script type="text/javascript" src="../../js/vue/axios.min.js"></script>
+<script type="text/javascript" src="../../js/vue/http.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            items: {},
+            dclasses: {},
+            manufactureres: {},
+            users:{},
+            FormData:{}
+        },
+        created: function () {
+            this.initItems(1, 5);
+            
+        },
+        computed: {
+            
+        },
+        methods: {
+            
+            //初始化数据
+            initItems: function(curr, limit){
+               
+                axios.get('/device-class/getDeviceClass').then(res => {
+                    
+                    this.dclasses = res.data.data
+                });
+                axios.get('/device-manufacturer/getDeviceManufacturer').then(res => {
+                    this.manufactureres = res.data.data
+                });
+                axios.get('/user/userInfo').then(res => {
+                    this.users = res.data.data
+                }); 
+               
+            },
+           
+
+
+
+
+            
+            // loginSubmit: function(){
+                
+            //     this.$axios({
+            //         method:"post",
+            //         url:"/device/save",
+            //         data:{
+            //             "device":{
+            //         "pprice": $("#pprice").val(),
+            //         "deviceManufacturer": {"mid":this.manufacturer_select},
+            //         "did": $("#did").val(),
+            //         "pname": $("#pname").val(),
+            //         "dnumber": $("#dnumber").val(),
+            //         "deviceClass":{"cid":this.deviceClass_select} ,
+            //         "dstatus": $("#dstatus").val(),
+            //         "user":{"uid":this.user_select}}
+            //         },
+                   
+            //     }).then((res)=>{
+            //         console.log(res.data);
+            //     })
+                
+           
+            // },
+            // loginSubmit:function(){
+                
+            //     let data = JSON.stringify(this.FormData);
+            //     this.axios({
+            //         method:'post',
+            //         url:"/device/save",
+            //         // contentType:"application/json",
+            //         data:data
+            //     }).then((res) => {
+            //         console.log(res.data);
+            //     })
+            //     console.log(res.data);
+            // },
+            selectChange: function(){
+                this.initItems(1, 5)
+            },
+        }
+    });
+</script>
+</body>
+</html>

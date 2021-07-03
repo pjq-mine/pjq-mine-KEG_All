@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysu.mapper.DeviceManufacturerMapper">
+    <select id="deviceManufacturerList" resultType="com.ysu.entity.DeviceManufacturer">
+        SELECT m_id,m_name  FROM device_manufacturer
+    </select>
+    <select id="getDeviceManufacturer" resultType="com.ysu.entity.DeviceManufacturer">
+        SELECT m_id,m_name  FROM device_manufacturer where m_id != 4
+    </select>
+</mapper>

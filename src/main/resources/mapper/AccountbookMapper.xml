@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysu.mapper.AccountbookMapper">
+    <resultMap id="AccountbookResultMap" type="com.ysu.entity.Accountbook">
+        <id column="a_id" property="aId"/>
+        <result column="u_id" property="uId" jdbcType="VARCHAR" />
+        <result column="a_thing" property="aThing" jdbcType="VARCHAR" />
+        <result column="a_type" property="aType" jdbcType="INTEGER" />
+        <result column="a_time" property="aTime" jdbcType="VARCHAR" />
+        <result column="a_number" property="aNumber" jdbcType="INTEGER" />
+        <result column="a_responsible" property="aResponsible" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="where_sql">
+        <where>
+            and a_type = #{status}
+            and( a_thing like concat('%',#{keyword},'%')
+            or u_id like concat('%',#{keyword},'%')
+            or a_responsible like concat('%',#{keyword},'%'))
+        </where>
+    </sql>
+
+    <select id="AccountbookList" resultMap="AccountbookResultMap">
+        SELECT
+        *
+        FROM
+        `accountbook`
+        <include refid="where_sql"/>
+    </select>
+
+    <delete id="deleteAccountbook">
+        DELETE FROM `accountbook`
+        WHERE
+        a_id = #{ids}
+    </delete>
+
+    <insert id="insertAccount">
+        insert into accountbook (u_id, a_thing, a_type, a_time, a_number, a_responsible)
+        VALUES
+               (#{accountbook.uId}, #{accountbook.aThing}, #{accountbook.aType}, #{accountbook.aTime}, #{accountbook.aNumber}, #{accountbook.aResponsible})
+    </insert>
+</mapper>

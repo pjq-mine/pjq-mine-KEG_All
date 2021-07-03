@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysu.mapper.UserResearchMapper">
+
+    <select id="userResearchList" resultType="com.ysu.entity.UserResearch">
+        SELECT r_id,r_name  FROM user_research
+    </select>
+    <select id="getUserResearch" resultType="com.ysu.entity.UserResearch">
+        SELECT r_id,r_name  FROM user_research WHERE r_id != 4
+    </select>
+</mapper>
